@@ -217,6 +217,11 @@
 </script>
 
 <style>
+/*  #ifdef MP-WEIXIN */
+page{
+	height: 100%;
+}
+/* #endif */
 	.addressShowList{
 		padding-bottom:132rpx ;
 	}

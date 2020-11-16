@@ -5,7 +5,8 @@ module.exports = {
 	getUsersInfo:ApiRootUrl+"/wechat/getUsersInfo",//获取微信
 	getShareSign:ApiRootUrl+"/wechat/getShareSign",//获取微信分享信息
 	getWechatSign:ApiRootUrl+"/wechat/getWechatSign",//获取
-	getUsersUsersInfo:ApiRootUrl+"/Users/getUsersInfo",//获取	
+	getUsersUsersInfo:ApiRootUrl+"/Users/getUsersInfo",//获取小程序登录信息	
+	getUserData:ApiRootUrl+"/wechat/getUserData",//获取小程序openid直接登录
 	wxJsApiPay:ApiRootUrl+"/wechat/wxJsApiPay",//获取微信
 	getProductList:ApiRootUrl+"/product/getProductList",//获取商品列表
 	getProductData:ApiRootUrl+"/product/getProductData",//获取商品信息

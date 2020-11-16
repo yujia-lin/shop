@@ -93,7 +93,7 @@
 				orderList:[],
 				total_all:0,
 				product:[],
-				uid:2,
+				uid:null,
 				paySuccessFlag:false,
 				pid:"",
 				sku_id:"",
@@ -231,6 +231,9 @@
 						type:utype,
 						openId:this.userInfo.openid,
 					}
+					// #ifdef MP-WEIXIN
+					obj.appId="wxbf5fa3d3954f012c";
+					// #endif 
 					console.log(obj);
 					obj = qs.stringify(obj);
 					uni.request({
@@ -244,7 +247,26 @@
 							var e=res.data;
 							if(e){
 								console.log(e);
+						
+								// #ifdef MP-WEIXIN
+								uni.requestPayment({
+									provider: 'wxpay',
+									timeStamp: e.timeStamp,
+									nonceStr: e.nonceStr,
+									package: e.package,
+									signType: e.signType,
+									paySign: e.paySign,
+									success: function(res) {
+										console.log('success:' + JSON.stringify(res));
+									},
+									fail: function(err) {
+										console.log('fail:' + JSON.stringify(err));
+									}
+								});
+								// #endif
+								// #ifdef H5
 								_this.wxReadyTopay(e);
+								// #endif
 							}
 					    }
 					});
@@ -411,6 +433,11 @@
 </script>
 
 <style>
+/*  #ifdef MP-WEIXIN */
+page{
+	height: 100%;
+}
+/* #endif */
 .orderconfirmMain {
 	height: 100%;
 	box-sizing: border-box;

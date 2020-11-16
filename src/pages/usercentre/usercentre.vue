@@ -2,10 +2,16 @@
 	<view>
 		<view class="userBox">
 			<image class="userImg" :src="userInfo.avatar"></image>
-			<view class="userText">
+			<view class="userText" v-if="hasLogin">
 				<view class="userName">{{userInfo.nickname}}</view>
 				<view class="userIdText">ID:{{userInfo.uid+10000}}</view>
 				<view class="usertimeText">注册时间:{{userInfo.reg_time}}</view>
+			</view>
+			<view class="userBtnBox" :class="isCanUse?'ui-show':'ui-hide'">
+				<!-- <view class="userBtn" @click="wxGetUserInfo"></view> -->
+				<button class='bottom' type='primary' open-type="getUserInfo" withCredentials="true" lang="zh_CN" @getuserinfo="wxGetUserInfo(false)">
+				    立即登录
+				</button>
 			</view>
 		</view>
 		<view class="userColorBlock"></view>
@@ -69,7 +75,7 @@
 							</view>
 							<view class="userSubsidiarytext">我的收藏</view>
 						</view>
-						<view class="userSubsidiaryItem"  @click="goAddress">
+						<view class="userSubsidiaryItem"  @click="goInformation">
 							<view class="userSubsidiaryimg ">
 								<image src="../../static/subsidiary_icon4.png" mode="widthFix"></image>
 							</view>
@@ -93,6 +99,8 @@
 		},
 		onLoad(e) {
 			var _this=this
+			
+			// _this.wxGetUserInfo();
 			this.getLoginStatus(function(e){
 				if(e=="error"){
 					console.log("没状态")
@@ -100,13 +108,21 @@
 					_this.userLogin();
 					// #endif
 					// #ifdef MP-WEIXIN
-					_this.wxGetUserInfo();
+					_this.getUserData(function(flag,info){
+						if(flag){
+							_this.login(info);
+						}else{
+							console.log(546)
+							_this.isCanUse=true;
+						}
+					});
 					// #endif
 				}else{
 					console.log("有状态")
 					_this.login(_this.userInfo);
 				}
 			});
+			
 		},
 		computed:{
 			...mapState(["hasLogin"]),
@@ -175,7 +191,6 @@
 					// },
 				    success: (res) => {
 						var e=res.data;
-						alert(e.url)
 						// return;
 						window.location.href= e.url;
 				    }
@@ -203,6 +218,11 @@
 				}
 				
 			},
+			goInformation:function(){
+				uni.switchTab({
+				    url: '../information/information'
+				});
+			},
 			goCollect:function(){
 				uni.navigateTo({
 				    url: '../collect/collect'
@@ -218,84 +238,122 @@
 				    url: '../coupon/coupon'
 				});
 			},
-			wxGetUserInfo:function() {
+			wxGetUserInfo:function(callback) {
 			    let _this = this;
-				
-						var  appid="wxbf5fa3d3954f012c";
-						var  secret="cd61588b5813c7bd9849be2b9d5c7562";
-						uni.login({
-							provider: 'weixin',
-							success: function(res) {
-							console.log(res)
-							
-							let url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' + appid + '&secret=' + secret + '&js_code=' +res.code + '&grant_type=authorization_code';
-								uni.request({
-									url: url, // 请求路径
-									data:{},
-									success: result => {
-										var code=result.data.openid;
-										console.log(result)
-										_this.getwx(code);
-										// _this.getUserinfo(code);
-									},
-								});
-							}
+				var call=callback
+				var  appid="wxbf5fa3d3954f012c";
+				var  secret="cd61588b5813c7bd9849be2b9d5c7562";
+				uni.login({
+					provider: 'weixin',
+					success: function(res) {
+					console.log(res)
+					
+					let url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' + appid + '&secret=' + secret + '&js_code=' +res.code + '&grant_type=authorization_code';
+						uni.request({
+							url: url, // 请求路径
+							data:{},
+							success: result => {
+								var code=result.data.openid;
+								console.log(result)
+								if(!call){
+									_this.getwx(code);
+								}else{
+									call(code);
+								}
+								// _this.getUserinfo(code);
+							},
 						});
+					}
+				});
 						// _this.toUser(res.data.data);
 			
 			},　　　　　　//登录
 			getwx:function(openid){
 				let _this = this;
+				console.log(_this.hasLogin)
 				uni.login({
 				    provider: 'weixin',
 				    success: function(loginRes) {
 				        let code = loginRes.code;
+						console.log(_this.hasLogin)
 				        if (!_this.hasLogin) {
 				            //非第一次授权获取用户信息
 				            uni.getUserInfo({
 				                provider: 'weixin',
-				                success: function(infoRes) { 
-									　　　　　　　　　　　　　　　　　　　　　　//获取用户信息后向调用信息更新方法
+				                success: function(infoRes) {
+									console.log(infoRes.userInfo)　　　　　　　　　　　　　　　　　　　　　　//获取用户信息后向调用信息更新方法
+									_this.updateUserInfo(infoRes,openid);
 				                        // _this.updateUserInfo();//调用更新信息方法
-									let nickName = infoRes.userInfo.nickName; //昵称
-									let avatarUrl = infoRes.userInfo.avatarUrl; //头像
-									let sex = infoRes.userInfo.gender; //性别
-									let city = infoRes.userInfo.city; //城市
-									let province = infoRes.userInfo.province; //省份
-									let country = infoRes.userInfo.country; //国家
-									var obj={
-										openid:openid,
-										nickname:nickName,
-										headimgurl:avatarUrl,
-										city:city,
-										sex:sex,
-										province:province,
-										country:country,
-										type:1,
-									}
-									console.log(obj)
-									obj = qs.stringify(obj);
-									uni.request({
-										url:api.getUsersUsersInfo,
-										method:"POST",
-										data:obj,
-										header:{
-											'content-type':'application/x-www-form-urlencoded',
-										},
-										success: (res) => {
-											console.log(res)
-											var info=res.data;
-											_this.toUser(res.data.data);
-											// var e=res.data;
-											// alert(e.url)
-											// window.location.href= e.url;
-										}
-									});
 				                }
 				            });
 				        }
 				    },
 				});
+			},
+			updateUserInfo:function(infoRes,openid){
+				let _this = this;
+				let nickName = infoRes.userInfo.nickName; //昵称
+				let avatarUrl = infoRes.userInfo.avatarUrl; //头像
+				let sex = infoRes.userInfo.gender; //性别
+				let city = infoRes.userInfo.city; //城市
+				let province = infoRes.userInfo.province; //省份
+				let country = infoRes.userInfo.country; //国家
+				var obj={
+					openid:openid,
+					nickname:nickName,
+					headimgurl:avatarUrl,
+					city:city,
+					sex:sex,
+					province:province,
+					country:country,
+					type:1,
+				}
+				console.log(obj)
+				uni.request({
+					url:api.getUsersUsersInfo,
+					method:"POST",
+					data:obj,
+					// header:{
+					// 	'content-type':'application/x-www-form-urlencoded',
+					// },
+					success: (res) => {
+						console.log(res)
+						var info=res.data;
+						_this.toUser(res.data.data);
+						// var e=res.data;
+						// alert(e.url)
+						// window.location.href= e.url;
+					}
+				});
+			},
+			getUserData:function(callback){
+				var _this=this;
+				this.wxGetUserInfo(function(openid){
+					var obj={
+						openid:openid
+					}
+					obj = qs.stringify(obj);
+					uni.request({
+						url:api.getUserData,
+						method:"POST",
+						data:obj,
+						header:{
+							'content-type':'application/x-www-form-urlencoded',
+						},
+						success: (res) => {
+							var e=res.data;
+							if(e.data.length!=0){
+								callback(true,e.data)
+							}else{
+								callback(false)
+							}
+							
+							// var e=res.data;
+							// alert(e.url)
+							// window.location.href= e.url;
+						}
+					});
+				})
 			}
 		}
 	}
@@ -452,5 +510,11 @@
 	color: #5C5D5F;
 	text-align: center;
 	line-height: 60rpx;
+}
+.ui-show{
+	display:block;
+}
+.ui-hide{
+	display:none;
 }
 </style>

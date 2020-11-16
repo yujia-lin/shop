@@ -352,7 +352,7 @@
 		text-align: center;
 		color: #FF444C;
 		font-size: 44rpx;
-		margin-top: 40rpx;
+		padding-top: 40rpx;
 		height: 80rpx;
 		line-height: 80rpx;
 	}
@@ -365,7 +365,7 @@
 		border-radius: 50px;
 		left: 50%;
 		top: 50%;
-		margin-top: -10rpx;
+		margin-top: 10rpx;
 		margin-left: -10rpx;
 	}
 	
@@ -383,7 +383,7 @@
 		position: absolute;
 		left: 50%;
 		top: 50%;
-		margin-top: -3rpx;
+		margin-top: 17rpx;
 		margin-left: -60rpx;
 	}
 	

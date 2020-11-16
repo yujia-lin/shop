@@ -260,9 +260,17 @@
 </script>
 
 <style>
+/*  #ifdef MP-WEIXIN */
+page{
+	height: 100%;
+}
+/* #endif */
 .addressPopup{
 	position:fixed ;
 	top: 88rpx;
+	/*  #ifdef MP-WEIXIN */
+	top: 0;
+	/* #endif */
 	bottom: 0;
 	left: 0;
 	right: 0;

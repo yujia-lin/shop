@@ -1,8 +1,8 @@
 <template>
 	<view class="orderMain" id="orderMain"  >
 		<view v-if="statusFlag">
-			<view class="orderNotHave" v-show="statusFlag" v-if="collectList.length<1">
-				<image class="orderNotImg" src="../../static/orderno.png"></image>
+			<view class="orderNotHave"  v-if="collectList.length<1">
+				<image class="orderNotImg" src="../../static/orderno.png" mode="widthFix"></image>
 				<view class="orderNotText">您暂时没有收藏商品</view>
 			</view>
 		</view>
@@ -119,6 +119,11 @@
 </script>
 
 <style>
+/*  #ifdef MP-WEIXIN */
+page{
+	height: 100%;
+}
+/* #endif */
 .orderMain {
 	min-height: 100%;
 	background: #f5f5f5;
@@ -127,7 +132,7 @@
 }
 .orderNotHave {
 	padding-top: 280rpx;
-	display: none;
+	/* display: none; */
 }
 .orderNotImg {
 	display: block;

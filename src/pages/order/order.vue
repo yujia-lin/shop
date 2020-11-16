@@ -1,5 +1,5 @@
 <template>
-<view class="orderMain" id="orderMain" v-cloak>
+<view class="orderMain" id="orderMain">
 	<!--<view class="orderSearch">
 		<view href=""></view>
 	</view>-->
@@ -49,7 +49,7 @@
 		<view class="tipsPopup PopupMain"  v-if="cancelFlag">
 				<view class="orderPopupSMain">
 					<view class="orderPopupSText">
-						<view>是否取消订单?</view>
+						<view class="orderPopupSTextH5">是否取消订单?</view>
 					</view>
 				</view>
 				<view class="orderPopupBtnBox f_flex">
@@ -58,8 +58,8 @@
 				</view>
 		</view>
 	</view>
-	<view class="orderList" v-if="orderArr.length>0 || ((orderStatusNum==0||orderStatusNum==1)&&orderArr1.length>0)">
-		<view class="orderListItem" v-for="(item,index) in orderArr1" v-if="(orderStatusNum==1&&item.status==0)||orderStatusNum==0">
+	<view class="orderList" v-if="orderArr.length>0 || (orderStatusNum==0||orderStatusNum==1)">
+<!-- 		<view class="orderListItem" v-for="(item,index) in orderArr1" v-if="(orderStatusNum==1&&item.pay_status==0)||orderStatusNum==0">
 			<view class="orderListItemBase f_flex">
 				<view class="orderListItemImgList" v-if="!item.title">
 					<image :src="urls+itemzi.activity_img" class="orderListItemImg" v-for="itemzi in item.product"></image>
@@ -71,17 +71,17 @@
 					<view class="orderListItemSymbol"><view>数量：{{item.product.length}}</view></view>
 				</view>
 			</view>
-			<view class="orderListItemBtnBox clear" v-if="item.status==0">
+			<view class="orderListItemBtnBox clear" v-if="item.pay_status==0">
 				<view @click="goOrderconfirm(item.gourls)" class="orderListItemBtn">去支付</view>
 				<view href="javascript:;" class="orderListItemBtn" @click="cancelShow(item,index)">取消订单</view>
 			</view>
-		</view>
+		</view> -->
 		<view class="orderListItem" v-for="(item,index) in orderArr" v-if="orderStatusNum==0||(item.showCheck==orderStatusNum) && orderStatusNum!=1">
 			<view class="orderListItemBase f_flex">
-				<image :src="item.spec_img" class="orderListItemImg"></image>
+				<image :src="urls+item.activity_img" class="orderListItemImg"></image>
 				<view class="orderListItemBaseText z_flex">
 					<view class="orderListItemTitle">{{item.title}}</view>
-					<view class="orderListItemPrice paddingNo">总价￥{{item.price}}</view>
+					<view class="orderListItemPrice paddingNo">总价￥{{item.total_fee}}</view>
 					<view class="orderListItemSymbol"><view v-if="item.symbol">规格：{{item.symbol}}</view><view>数量：{{item.product_num}}</view></view>
 				</view>
 			</view>
@@ -168,7 +168,9 @@
 				// 202010201701153815
 			},
 			goOrderconfirm:function(can){
-				
+				uni.navigateTo({
+					url: "../orderconfirm/orderconfirm"+can
+				});
 			},
 			statusCheck:function(text){
 				if(text=="all" || text==""){
@@ -186,9 +188,22 @@
 				}
 			},
 			goOrder:function(text){
-				uni.navigateTo({
-				    url: '../order/order?type='+text
-				});
+				if(text=="all" || text==""){
+					this.orderStatusNum=0;
+				}else if(text=="staypayment"){
+					this.orderStatusNum=1;
+				}else if(text=="staydeliver"){
+					this.orderStatusNum=2;
+				}else if(text=="staycollect"){
+					this.orderStatusNum=3;
+				}else if(text=="stayevaluate"){
+					this.orderStatusNum=4;
+				}else{
+					this.orderStatusNum=0;
+				}
+				// uni.navigateTo({
+				//     url: '../order/order?type='+text
+				// });
 			},
 			statusListCheck:function(num){
 //				0待付款1待发货2待收货3待评价4已评价5已追评6待退换7已退款8退换进行中 
@@ -317,56 +332,57 @@
 				});
 				
 			},
-			getNoPayOrderList:function(){
-				var _this=this;
-				var obj={
-					uid:this.uid,
-				}
-				obj = qs.stringify(obj);
-				uni.request({
-					url:api.getNoPayOrderList,
-					method:"POST",
-					data:obj,
-					header:{
-					    'content-type':'application/x-www-form-urlencoded',
-					},
-				    success: (res) => {
-						var e=res.data;
-						var data=e.data;
-						for(var i in data){
+			// getNoPayOrderList:function(){
+			// 	var _this=this;
+			// 	var obj={
+			// 		uid:this.uid,
+			// 	}
+			// 	obj = qs.stringify(obj);
+			// 	uni.request({
+			// 		url:api.getNoPayOrderList,
+			// 		method:"POST",
+			// 		data:obj,
+			// 		header:{
+			// 		    'content-type':'application/x-www-form-urlencoded',
+			// 		},
+			// 	    success: (res) => {
+			// 			var e=res.data;
+			// 			var data=e.data;
+			// 			_this.urls=e.url;
+			// 			for(var i in data){
 							
-							if(data[i].product.length==1){
-								data[i].title=data[i].product[0].title;
-							}
-							// 0待付款1待发货2待收货3待评价4已评价5已追评6待退换7已退款8退换进行中 
+			// 				if(data[i].product.length==1){
+			// 					data[i].title=data[i].product[0].title;
+			// 				}
+			// 				// 0待付款1待发货2待收货3待评价4已评价5已追评6待退换7已退款8退换进行中 
 							
-							var pid="";
-							var sku_id="";
-							var product_num="";
+			// 				var pid="";
+			// 				var sku_id="";
+			// 				var product_num="";
 						
-							for(var j in data[i].product){
-								if(data[i].status==0){
-									_this.waitfor=true;
-								}
-								 var unit=","
-								if(j==0){
-									unit=""
-								}
-								pid+=unit+data[i].product[j].pid;
-								sku_id+=unit+data[i].product[j].sku_id;
-								product_num+=unit+data[i].product[j].product_num;
-							}
-							data[i].gourls="?.pid="+pid+"&sku_id="+sku_id+"&num="+product_num;
+			// 				for(var j in data[i].product){
+			// 					if(data[i].pay_status==0){
+			// 						_this.waitfor=true;
+			// 					}
+			// 					 var unit=","
+			// 					if(j==0){
+			// 						unit=""
+			// 					}
+			// 					pid+=unit+data[i].product[j].pid;
+			// 					sku_id+=unit+data[i].product[j].sku_id;
+			// 					product_num+=unit+data[i].product[j].product_num;
+			// 				}
+			// 				data[i].gourls="?pid="+pid+"&sku_id="+sku_id+"&num="+product_num;
 							
-						}
-						if(_this.pageName=="staypayment"){
-							_this.showNoFlag=true;
-						}
-							_this.orderArr1=data;
-				    }
-				});
+			// 			}
+			// 			if(_this.pageName=="staypayment"){
+			// 				_this.showNoFlag=true;
+			// 			}
+			// 				_this.orderArr1=data;
+			// 	    }
+			// 	});
 				
-			},
+			// },
 			orderList:function(index){
 				var _this=this;
 				var obj={
@@ -386,8 +402,8 @@
 							_this.urls=e.url;
 							var data=e.data;
 							for(var i in data){
-								var spec_imgUrl=_this.urls+data[i].spec_img;
-								data[i].activity_img=_this.urls+data[i].activity_img;
+								var spec_imgUrl=data[i].spec_img;
+								data[i].activity_img=data[i].activity_img;
 								if(!data[i].spec_img){
 									spec_imgUrl=data[i].activity_img
 								}
@@ -417,6 +433,11 @@
 </script>
 
 <style>
+/*  #ifdef MP-WEIXIN */
+page{
+	height: 100%;
+}
+/* #endif */
 .orderMain {
 	min-height: 100%;
 	background: #f5f5f5;

@@ -4,7 +4,13 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
     state: {
 		hasLogin:false,
-		userInfo:{},
+		friendUid:null,
+		userInfo:{
+			avatar:"",
+			nickname:"",
+			uid:"",
+			reg_time:""
+		},
 	},
     mutations: {
 		login(state,provider){

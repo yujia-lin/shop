@@ -77,6 +77,7 @@
         "router" : {
             "base" : "/h5/",
             "mode" : "history"
-        }
+        },
+        "title" : "潮莱富"
     }
 }

@@ -31,7 +31,7 @@
 			<view class="specsBtn" @click="specsSave">确定</view>
 		</view>
 	</view>
-	<view class="specsPopup" @click="couponHide" v-show="couponFlag">
+	<view class="specsPopup" @click="couponHide" v-show="couponFlag &&couponSwitch">
 		<view class="specsMain couponMainDetails" @click="shopMain">
 			<view class="couponTitle">可领取优惠券</view>
 			<view class="couponListDetails">
@@ -82,8 +82,8 @@
 				<image class="specificationsRImg" mode="widthFix" src="../../static/right_icon1.png"></image>
 			</view>
 		</view>
-		<view class="userColorBlock" v-if="couponList.length>0"></view>
-		<view class="specifications f_flex" v-if="couponList.length>0">
+		<view class="userColorBlock" v-if="couponList.length>0 && couponSwitch"></view>
+		<view class="specifications f_flex" v-if="couponList.length>0 && couponSwitch">
 			<view class="specificationsL">优惠</view>
 			<view class="specificationsR z_flex"  @click="couponShow">
 				{{couponSelectEdText}} 
@@ -150,6 +150,7 @@
 				uid:null,
 				shopNumber:1,
 				specsflag:false,
+				couponSwitch:false,
 				couponFlag:false,
 				collect:false,
 				specsSelectEd:"",
@@ -578,7 +579,7 @@
     z-index: 101;
 }
 .specsMain{
-	position: absolute;
+	position: fixed;
 	left: 0;
 	width: 100%;
 	bottom:0;
@@ -636,7 +637,7 @@
 	overflow-y: auto; 
 }
 .specsBtnBox{
-	position: absolute;
+	position: fixed;
 	bottom:0;
 	left: 0;
 	right: 0;

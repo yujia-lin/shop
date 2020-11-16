@@ -1,192 +1,276 @@
 <template>
-    <view>
-        <!-- #ifdef MP-WEIXIN -->
-        <view v-if="isCanUse">
-            <view>
-                <view class='header'>
-                    <image src='../../static/filterItemDownAct.png'></image>
-                </view>
-                <view class='content'>
-                    <view>申请获取以下权限</view>
-                    <text>获得你的公开信息(昵称，头像、地区等)</text>
-                </view>
-
-                <button class='bottom' type='primary' open-type="getUserInfo" withCredentials="true" lang="zh_CN" @getuserinfo="wxGetUserInfo">
-                    授权登录
-                </button>
-            </view>
-        </view>
-        <!-- #endif -->
-    </view>
+	<view class="orderMain" id="orderMain">
+		<view class="orderNotHave" v-if="couponList.length<1">
+			<image class="orderNotImg" mode="widthFix" src="../../static/orderno.png"></image>
+			<view class="orderNotText" >您暂时没有优惠券</view>
+		</view>
+		<view class="couponList"  v-if="couponList.length>0">
+			<view class="couponNav f_flex">
+				<view href="#notused" class="z_flex couponItem" :class="couponStatus==0?'couponItemAct':''" @click="couponItemChange(0)">
+					<text class="couponItem_decorate">未使用</text>
+				</view> 
+				<view href="#used" class="z_flex couponItem" :class="couponStatus==1?'couponItemAct':''" @click="couponItemChange(1)">
+					<text class="couponItem_decorate">已使用</text>
+				</view>
+				<view href="#overdue" class="z_flex couponItem" :class="couponStatus==2?'couponItemAct':''" @click="couponItemChange(2)">
+					<text class="couponItem_decorate">已过期</text>
+				</view>
+			</view>
+			<view class="couponListItemBox">
+				<view class="couponListItem f_flex" v-for="item in couponList" v-if="couponStatus==item.status" :class="item.status!=0?'couponListItemNo':''">
+					<view class="couponListItemL z_flex">
+						<view class="couponListItem_rt couponListItem_Radio"></view> 
+						<view class="couponListItem_rb couponListItem_Radio"></view> 
+						<view class="couponListItemRText">{{item.title}}</view> 
+						<view class="couponListItemRTime">{{item.end_time}}到期</view>
+					</view> 
+					<view class="couponListItemR">
+						<view class="couponListItem_lt couponListItem_Radio"></view> 
+						<view class="couponListItem_lb couponListItem_Radio"></view> 
+						<view class="couponPrice">￥{{item.quota}}</view> 
+						<view class="couponCondition">满{{item.condition}}使用</view> 
+						<view href="./list.html" class="couponListItemRBtn" >使用</view>
+					</view>
+				</view>
+			</view>
+			
+		</view>
+	</view>
 </template>
+
 <script>
 	var api = require('../../config/api.js')
 	import qs from 'qs'
-    export default {
-        data() {
-            return {
-                SessionKey: '',
-                OpenId: '',
-                nickName: null,
-                avatarUrl: null,
-                isCanUse: uni.getStorageSync('isCanUse')||true//默认为true
-            };
-        },
-        methods: {
-            //第一授权获取用户信息===》按钮触发
-            wxGetUserInfo() {
-                let _this = this;
-				
-				uni.request({
-					url:api.getWechatSign,
-					method:"POST",
-					data:{},
-					header:{
-					    'content-type':'application/x-www-form-urlencoded',
-					},
-				    success: (result) => {
-						var  appid="wxbf5fa3d3954f012c";
-						var  secret="cd61588b5813c7bd9849be2b9d5c7562Z";
-						uni.login({
-							provider: 'weixin',
-							success: function(res) {
-							console.log(res)
-							let url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' + appid + '&secret=' + secret + '&js_code=' +res.code + '&grant_type=authorization_code';
-								uni.request({
-									url: url, // 请求路径
-									data:{},
-									success: result => {
-										var code=result.data.openid
-										_this.getUserinfo(code);
-									},
-								});
-							}
-						});
-						// _this.toUser(res.data.data);
-				    }
+	import {mapState,mapMutations} from "vuex"
+	export default {
+		data() {
+			return {
+				addressFlag:false,
+				couponList:0,
+				couponStatus:0,
+				uid:1
+			}
+		},
+		computed:{
+			...mapState(["hasLogin"]),
+			...mapState(["userInfo"]),
+		},
+		onLoad(e) {
+			console.log(this.userInfo.uid)
+			console.log(this.hasLogin)
+			if(!this.hasLogin){
+				uni.reLaunch({
+				    url: '/pages/usercentre/usercentre'
 				});
+			}
+			if(this.userInfo.uid){
+				this.uid=this.userInfo.uid;
+				console.log(this.userInfo)
+			}
 			
-            },　　　　　　//登录
-			getUserinfo:function(code){
+		},
+		onShow() {
+			this.getUsersCouponList();
+		},
+		methods: {
+			couponItemChange:function(index){
+				this.couponStatus=index;
+			},
+			getUsersCouponList:function(){
 				var _this=this;
 				var obj={
-					code:code
+					uid:this.uid,
 				}
 				obj = qs.stringify(obj);
 				uni.request({
-					url:api.getUsersInfo,
+					url:api.getUsersCouponList,
 					method:"POST",
 					data:obj,
 					header:{
 					    'content-type':'application/x-www-form-urlencoded',
 					},
 				    success: (res) => {
-						console.log(res)
-						// _this.toUser(res.data.data);
+						var e=res.data;
+						if(e.code==0){
+							_this.couponList=e.data;
+						}
 				    }
 				});
-			},
-           login() {
-                let _this = this;
-                // uni.showLoading({
-                //     title: '登录中...'
-                // });
-             
-               // 1.wx获取登录用户code
-                uni.login({
-                    provider: 'weixin',
-                    success: function(loginRes) {
-                        let code = loginRes.code;
-                        if (!_this.isCanUse) {
-                            //非第一次授权获取用户信息
-                            uni.getUserInfo({
-                                provider: 'weixin',
-                                success: function(infoRes) { 　　　　　　　　　　　　　　　　　　　　　　//获取用户信息后向调用信息更新方法
-                                    let nickName = infoRes.userInfo.nickName; //昵称
-                                    let avatarUrl = infoRes.userInfo.avatarUrl; //头像
-                                        // _this.updateUserInfo();//调用更新信息方法
-                                }
-                            });
-                        }
-            
-                        //2.将用户登录code传递到后台置换用户SessionKey、OpenId等信息
-                        uni.request({
-                            url: '服务器地址',
-                            data: {
-                                code: code,
-                            },
-                            method: 'GET',
-                            header: {
-                                'content-type': 'application/json'
-                            },
-                            success: (res) => {
-                                //openId、或SessionKdy存储//隐藏loading
-                                uni.hideLoading();
-                            }
-                        });
-                    },
-                });
-            },
-         //向后台更新信息
-            // updateUserInfo() {
-            //     let _this = this;
-            //     uni.request({
-            //         url:'url' ,//服务器端地址
-            //         data: {
-            //             appKey: this.$store.state.appKey,
-            //             customerId: _this.customerId,
-            //             nickName: _this.nickName,
-            //             headUrl: _this.avatarUrl
-            //         },
-            //         method: 'POST',
-            //         header: {
-            //             'content-type': 'application/json'
-            //         },
-            //         success: (res) => {
-            //             if (res.data.state == "success") {
-            //                 uni.reLaunch({//信息更新成功后跳转到小程序首页
-            //                     url: '/pages/index/index'
-            //                 });
-            //             }
-            //         }
-                   
-            //     });
-            // }
-        },
-        onLoad() {//默认加载
-            this.login();
-        }
-    }
+			}
+		}
+	}
 </script>
+
 <style>
- .header {
-        margin: 90rpx 0 90rpx 50rpx;
-        border-bottom: 1px solid #ccc;
-        text-align: center;
-        width: 650rpx;
-        height: 300rpx;
-        line-height: 450rpx;
-    }
+/*  #ifdef MP-WEIXIN */
+page{
+	height: 100%;
+}
+/* #endif */
+.orderMain {
+    min-height: 100%;
+    background: #f5f5f5;
+    box-sizing: border-box;
+}
+.orderNotText {
+    text-align: center;
+    line-height: 100rpx;
+    font-size: 40rpx;
+    color: #333;
+}
+.couponNav {
+	box-shadow: 0 6rpx 14rpx 4rpx rgba(226, 226, 226, .5);
+	background: #fff;
+}
 
-    .header image {
-        width: 200rpx;
-        height: 200rpx;
-    }
+.orderNotHave {
+    padding-top: 280rpx;
+}
+.orderNotImg {
+	display: block;
+	margin: 0 auto;
+	width: 522rpx;
+}
+.orderNotText {
+	text-align: center;
+	line-height:100rpx;
+	font-size: 40rpx;
+	color: #333;
+}
+.couponItem {
+	font-size: 28rpx;
+	text-align: center;
+	height: 88rpx;
+	line-height: 88rpx;
+	color: #333;
+}
 
-    .content {
-        margin-left: 50rpx;
-        margin-bottom: 90rpx;
-    }
+.couponItem_decorate {
+	display: inline-block;
+	height: 84rpx;
+}
 
-    .content text {
-        display: block;
-        color: #9d9d9d;
-        margin-top: 40rpx;
-    }
+.couponItemAct .couponItem_decorate {
+	color: #FF444C;
+	font-weight: 600;
+	border-bottom: 4rpx solid #FF444C;
+}
+.couponTitle{
+	padding-left: 20rpx;
+	font-size: 32rpx;
+	color: #999;
+}
+.couponListDetails{
+	padding-top: 40rpx;
+}
+.couponListItem{
+	/*box-shadow: -5px 2px 1px 1px rgba(0,0,0,0.3);*/
+	margin-bottom: 30rpx;
+}
+.detailsMain .couponMainDetails{
+	background: #f5f5f5;
+}
+.couponMainDetails .couponListItemRBtn{
+	color: #FF444C;
+}
+.couponListItemRText {
+	font-size: 40rpx;
+	line-height: 1;
+	padding-top: 20rpx;
+	padding-bottom: 20rpx;
+	color: #333;
+}
 
-    .bottom {
-        border-radius: 80rpx;
-        margin: 70rpx 50rpx;
-        font-size: 35rpx;
-    }
+.couponListItemL {
+	font-size: 44rpx;
+	background: #fff;
+	border-radius: 20rpx 0 0 20rpx;
+	padding-left: 30rpx;
+	padding-top: 30rpx;
+	position: relative;
+}
+
+.couponListItemRTime {
+	font-size: 24rpx;
+	color: #b3b0b0;
+}
+
+.couponListItemR {
+	width: 240rpx;
+	font-size: 44rpx;
+	background: #FF444C;
+	padding: 30rpx 0;
+	border-radius: 0 20rpx 20rpx 0;
+	position: relative;
+}
+
+.couponPrice {
+	font-size: 36rpx;
+	text-align: center;
+	color: #fff;
+	line-height: 1;
+}
+
+.couponCondition {
+	color: #fff;
+	font-size: 24rpx;
+	text-align: center;
+	line-height: 40rpx;
+	margin-bottom: .05rem;
+}
+
+.couponListItemRBtn {
+	font-size: 28rpx;
+	padding:  10rpx 0;
+	background: #fff;
+	text-align: center;
+	display: block;
+	width: 120rpx;
+	margin: 0 auto;
+	color: #999;
+	line-height: 1;
+	border-radius: 12rpx;
+}
+
+.couponListItem_lt {
+	left: 0;
+	top: 0;
+	border-radius: 0 0 30rpx 0;
+}
+
+.couponListItem_Radio {
+	background: #f5f5f5;
+	position: absolute;
+	width: 20rpx;
+	height: 20rpx;
+}
+
+.couponListItem_lb {
+	bottom: 0;
+	left: 0;
+	border-radius: 0 30rpx 0 0;
+}
+
+.couponListItem_rt {
+	border-radius: 0 0 0 30rpx;
+	top: 0;
+	right: 0;
+}
+
+.couponListItem_rb {
+	bottom: 0;
+	right: 0;
+	border-radius: 30rpx 0 0 0;
+}
+
+.couponListItemBox {
+	padding: 20rpx;
+}
+
+.couponListItemNo .couponListItemR {
+	background: #777;
+}
+.couponListItemNo .couponListItemR .couponListItemRBtn{
+	color: #777;
+}
 </style>

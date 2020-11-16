@@ -1,6 +1,11 @@
 <template>
     <view class="shopContent">
-    	<view class="cartShowBox">
+		<view class="cart_no" v-if="shop.length<1">
+			<image src="../../static/cartno.png" mode="widthFix" class="cart_noImg"></image>
+			<view class="cart_noText">购物车空空如也</view>
+			<view class="cart_noText1">快来挑好货，再忙也要享受生活</view>
+		</view>
+    	<view class="cartShowBox" v-if="shop.length>0">
 			<view class="cartShowScroll">
 				<view class="shopEdit">
 					<!--<view class="shopEditText">gong</view>-->
@@ -17,7 +22,10 @@
 						</view>
 						<view class="shopItemText z_flex">
 							<view @click.stop="shopGoDetails(item.pid)" ><view class="shopItemTitle">{{item.title}}</view></view>
-							<view @click.stop="shopGoDetails(item.pid)" ><view class="shopItemPrice">￥{{item.sell_price}}</view></view>
+							<view @click.stop="shopGoDetails(item.pid)" class="shopItemSpec">
+								<view class="shopItemPrice">￥{{item.sell_price}}</view>
+								<view class="shopItemSymbol">￥{{item.symbol}}</view>
+							</view>
 							<view class="shopItemCount">
 								<image  class="shopItemAdd " src="../../static/cartAddIcon.png" mode=""  @click.stop="shopAdd(item.product_num,index)"></image>
 								<input type="number" v-model="item.product_num" @click.stop="shopstopClick" @blur.stop="shopNumMin(index)" class="shopItemNum"/>
@@ -29,7 +37,7 @@
 				</view>
 			</view>
     	</view>
-    	<view class="shopfoot">
+    	<view class="shopfoot" v-if="shop.length>0">
     		<label class="shopAllSelect" :class="allcheck?'shopAllSelectAct':''" @click="allSelect">
     			<view class="shopAllSelectRadio">
 					<image src="../../static/paySuccessIcon.png" class="shopItemRadioImg" mode=""></image>
@@ -256,7 +264,7 @@
 				}
 				obj = qs.stringify(obj);
 				uni.request({
-				    url: api.delCart,
+				    url: api.clearCart,
 					method:"POST",
 					data:obj,
 					header:{
@@ -264,12 +272,12 @@
 					},
 				    success: (res) => {
 						var e=res.data
-						if(e.code==0&& e.msg=="删除成功"){
-							_this.shop=delshowArr;
+						if(e.code==0&& e.msg=="购物车已清空"){
+							_this.shop=[];
 							_this.shopprice =0;
 							_this.shopNum=0
 							uni.showToast({
-							    title: '删除成功',
+							    title: e.msg,
 								icon:'none',
 							    duration: 1000
 							});
@@ -300,6 +308,11 @@
 </script>
 
 <style>
+/*  #ifdef MP-WEIXIN */
+page{
+	height: 100%;
+}
+/* #endif */
 	.shoplist{
 		padding-bottom: 90rpx ;
 	}
@@ -308,7 +321,36 @@
 		border-bottom: 4rpx solid #e6e6e6;
 		padding: 30rpx 0;
 	}
-	
+.cart_no{
+	padding-top: 280rpx;
+}
+.shopItemSpec{
+	position: relative;
+}
+.shopItemSymbol{
+	position: absolute;
+	bottom:0;
+	font-size: 24rpx;
+	line-height: 40rpx;
+	color: #b3b0b0;
+}
+.cart_noImg{
+	display: block;
+	margin: 0 auto;
+	width: 460rpx;
+} 
+.cart_noText{
+	font-size: 40rpx;
+	color: #333;
+	text-align: center;
+	line-height: 100rpx;
+} 
+.cart_noText1{
+	font-size: 26rpx;
+	color: #b9b9b9;
+	text-align: center;
+	line-height: 1;
+}
 	.shopContent {
 		height: 100%;
 		position: relative;

@@ -67,7 +67,7 @@
 			var that=this;
 			//#ifdef H5
 			const url = encodeURIComponent(window.location.href.split('#')[0]);
-			alert(window.location.href.split('#')[0])
+			// alert(window.location.href.split('#')[0])
 			//#endif
 		},
 		methods: {
