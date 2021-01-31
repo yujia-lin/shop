@@ -1,17 +1,12 @@
 import Vue from 'vue'
 import App from './App'
-import wx from './config/jweixin'
-Vue.prototype.$wx = wx;
-//引入vuex
-import store from './store'
-//把vuex定义成全局组件
-Vue.prototype.$store = store
+import VueClipboard from 'vue-clipboard2'
+Vue.use(VueClipboard)
 Vue.config.productionTip = false
 
 App.mpType = 'app'
 
 const app = new Vue({
-  ...App,
-  store
+  ...App
 })
 app.$mount()

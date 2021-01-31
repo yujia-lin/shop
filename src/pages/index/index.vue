@@ -1,526 +1,658 @@
 <template>
-	<view class="indexContent">
-		<div class="set_top" @click="gotop">
-			<image src="../../static/arrowt.png"></image>
-		</div>
-		<view class="header searchNO_box">
-			<view class="search">
-				<image src="../../static/logo.png" mode=""  class="logo"></image>
-				<view class="search_input" @click="goSearch">请输入商品</view>
-				<view class="my_icons">
+	<view class="box">
+		<view class="cardBG"><image src="../../static/0.png" class="cardBGImg" mode="widthFix"></image></view>
+		<canvas canvas-id="myCanvas" id='canvasBox'></canvas>
+		<view class="synthesis" id="synthesis">
+			<view class="synthesisBottomBox synthesisBox" id="synthesisBottomBox"></view>
+			<view class="synthesisBottomBG synthesisBox" id="synthesisBoxBG"></view>
+			<image :src="imgList.pic4" mode="widthFix" class="synthesisBox synthesisTopBG" id="pic4"></image>
+			<view class="synthesisBox synthesisTitle" id="company">{{information.company}}</view>
+			<view class="synthesisBox synthesisName" id="name">{{information.name}}</view>
+			<view class="synthesisBox synthesisPosition" id="position">{{information.position}}</view>
+			<image :src="imgList.pic1" class="synthesisBox synthesisBox1 synthesisIcon" id="pic1" mode="widthFix"></image>
+			<view class="synthesisBox synthesisBoxt1 synthesisText" id="text1">{{information.text1}}</view>
+			<view class="synthesisBox synthesisBoxt1 synthesisValue" id="phone">{{information.phone}}</view>
+			<image :src="imgList.pic2" class="synthesisBox synthesisBox2 synthesisIcon1 synthesisIcon"  id="pic2" mode="widthFix"></image>
+			<view class="synthesisBox synthesisBoxt2 synthesisText"  id="text2">{{information.text2}}</view>
+			<view class="synthesisBox synthesisBoxt2 synthesisValue"  id="tel">{{information.tel}}</view>
+			<image :src="imgList.pic3" class="synthesisBox synthesisBox3 synthesisIcon1 synthesisIcon" id="pic3" mode="widthFix"></image>
+			<view class="synthesisBox synthesisBoxt3 synthesisText"  id="text3">{{information.text3}}</view>
+			<view class="synthesisBox synthesisBoxt3 synthesisValue" id="email">{{information.email}}</view>
+			<image :src="imgList.pic5" mode="widthFix" class="synthesisBox synthesisPic" id="pic5"></image>
+			<image :src="imgList.pic6" mode="widthFix" class="synthesisBox synthesisCode" id="pic6"></image>
+		</view>
+		<view class="sharePopup" v-if="shareFlag" @tap="hideShare">
+			<view class="shareMain" @tap.stop="clickno">
+				<button  class="shareBtn"  open-type="share" @ShareAppMessage="onShareAppMessage ">
+					<view class="shareIcon shareIcon1">
+						<image src="../../static/forward_icon.png" class="shareIconImg" mode="widthFix"></image>
+					</view>
+					<view class="shareText">转发</view>
+				</button>
+				<view class="shareBtn" @tap.stop="canvasSynthesis">
+					<view class="shareIcon shareIcon2">
+						<image src="../../static/poster_icon.png" 	class="shareIconImg" mode="widthFix"></image>
+					</view>
+					<view class="shareText">生成海报</view>
 				</view>
 			</view>
 		</view>
-		
-		<view class="indexSearchBox">
-		<scroll-view class="indexSearchBoxFind" >
-			<view class="indexBanner">
-				<indexBanner :list="bannerList"></indexBanner>
+		<view class="cardBox">
+			<view class="cardhead">
+				<view class="name cardheadText">{{information.name}}</view>
+				<view class="position cardheadText">{{information.position}}</view>
+				<view class="company cardheadText">{{information.company}}</view>
 			</view>
-			<view class="nav_BoxList">
-				<view class="nav_BoxItem">
-					<view class="nav_BoxItem_icon nav_BoxItem_icon4">
-						<image src="../../static/nav_BoxItem_icon10.png"></image>
-					</view>
-					<view class="nav_BoxItem_text">零食食品</view>
-				</view>
-				<view class="nav_BoxItem">
-					<view class="nav_BoxItem_icon nav_BoxItem_icon1">
-						<image src="../../static/nav_BoxItem_icon1.png" ></image>
-					</view>
-					<view class="nav_BoxItem_text">女装</view>
-				</view>
-				<view class="nav_BoxItem">
-					<view class="nav_BoxItem_icon nav_BoxItem_icon2">
-						<image  src="../../static/nav_BoxItem_icon2.png" ></image>
-					</view>
-					<view class="nav_BoxItem_text">男装</view>
-				</view>
-				<view class="nav_BoxItem">
-					<view class="nav_BoxItem_icon nav_BoxItem_icon3">
-						<image src="../../static/nav_BoxItem_icon3.png"></image>
-					</view>
-					<view class="nav_BoxItem_text">母婴童装</view>
-				</view>
-				<view class="nav_BoxItem">
-					<view class="nav_BoxItem_icon nav_BoxItem_icon4">
-						<image src="../../static/nav_BoxItem_icon4.png" ></image>
-					</view>
-					<view class="nav_BoxItem_text">数码</view>
-				</view>
-				<view class="nav_BoxItem">
-					<view class="nav_BoxItem_icon nav_BoxItem_icon5">
-						<image src="../../static/nav_BoxItem_icon5.png"></image>
-					</view>
-					<view class="nav_BoxItem_text">钟表珠宝</view>
-				</view>
-				<view class="nav_BoxItem">
-					<view class="nav_BoxItem_icon nav_BoxItem_icon6">
-						<image src="../../static/nav_BoxItem_icon6.png"></image>
-					</view>
-					<view class="nav_BoxItem_text">美妆护肤</view>
-				</view>
-				<view class="nav_BoxItem">
-					<view class="nav_BoxItem_icon nav_BoxItem_icon1">
-						<image src="../../static/nav_BoxItem_icon7.png"></image>
-					</view>
-					<view class="nav_BoxItem_text">箱包手袋</view>
-				</view>
-				<view class="nav_BoxItem">
-					<view class="nav_BoxItem_icon nav_BoxItem_icon2">
-						<image src="../../static/nav_BoxItem_icon8.png"></image>
-					</view>
-					<view class="nav_BoxItem_text">鞋子</view>
-				</view>
-				<view class="nav_BoxItem">
-					<view class="nav_BoxItem_icon nav_BoxItem_icon3">
-						<image src="../../static/nav_BoxItem_icon9.png"></image>
-					</view>
-					<view class="nav_BoxItem_text">户外休闲</view>
-				</view>
-				
+			<view class="cardSeparate">
+				<view class="cardSeparateL cardSeparateC"></view>
+				<view class="cardSeparateR cardSeparateC"></view>
+				<view class="cardSeparateLine"></view>
 			</view>
-			<view class="shopIndexList">
-				<view class="hotTitle"><view class="hotTitleLine hTLineL"></view><view class="hotTitleCircular hTCircularL"></view>热卖商品<view class="hotTitleCircular hTCircularR"></view><view class="hotTitleLine hTLineR"></view></view>
-				<view class="hotList clear">
-					<view  class="hotItem" @click="toDetails(item.pid)" v-for="item in goodsList" v-if="item.product_type==0">
-						<view class="hotItemBorder">
-							<image class="hotItemImg" :src="item.activity_img"></image>
-							<view class="hotItemText">
-								<view class="hotItemTitle">{{item.title}}</view>
-								<view class="hotItemTBox">
-									<view class="hotItemPrice ">￥{{item.sell_price}} </view>
-									<view class="hotItemSales ">销量：{{item.sales}} </view>
-									<!--<a href="" class="goodItemBtn">立即购买</a>-->
-								</view>
-							</view>
-						</view>
-					</view>
+			<view class="cardbody">
+				<view class="cardDataItem f_flex" @click="goPhone(information.phone)">
+					<view class="cardDataItemText">手机：</view>
+					<view class="cardDataItemOutput z_flex">{{information.phone}}</view>
+					<view class="cardDataItemIcon"><image src="../../static/phone_icon.png" class="cardDataItemIconImg" mode="widthFix"></image></view>
 				</view>
-				<view class="tac">
-					<view class="goodTitle"><image  class="goodTitleImg" src="../../static/goodIcon.png"></image>商品优选</view>
+				<view class="cardDataItem f_flex" @click="goPhone(information.tel)">
+					<view class="cardDataItemText">固话：</view>
+					<view class="cardDataItemOutput z_flex">{{information.tel}}</view>
+					<view class="cardDataItemIcon"><image src="../../static/tel_icon.png" class="cardDataItemIconImg" mode="widthFix"></image></view>
 				</view>
-				<view class="goodList">
-					<view class="goodItem f_flex" v-for="item in goodsList" v-if="item.product_type==1">
-						<image class="goodItemImg" :src="item.activity_img"/></image>
-						<view class="z_flex goodItemText">
-							<view class="goodItemTitle">{{item.title}}</view>
-							
-							<view class="goodItemTBox">
-								<view class="goodItemPriceP">
-									<view class="goodItemPrice clear">￥{{item.sell_price}}</view>
-									<view class="goodItemSales">销量：{{item.sales}}</view>
-								</view>
-								<view  @click="toDetails(item.pid)" class="goodItemBtn">立即购买</view>
-							</view>
-						</view>
-					</view>
+				<view class="cardDataItem f_flex" @click="copyText(information.email)">
+					<view class="cardDataItemText">邮箱：</view>
+					<view class="cardDataItemOutput z_flex">{{information.email}}</view>
+					<view class="cardDataItemIcon"><image src="../../static/email_icon.png" class="cardDataItemIconImg" mode="widthFix"></image></view>
 				</view>
 			</view>
-		</scroll-view>
+			<view class="cardfoot tac">
+				<view class="shareShowBtn cardfootBtn" @tap="addContacts">同步通讯录</view>
+				<view class="shareShowBtn cardfootBtn" @tap="showShare">分享名片</view>
+			</view>
+		</view>
+		<view class="introduceBox">
+			<view class="introduceTitle">
+				<view class="introduceTitleLine"></view>
+				<view class="introduceTitleText">简介</view>
+			</view>
+			<view class="introduceMain">{{information.introduce}}</view>
 		</view>
 	</view>
 </template>
 
 <script>
-	import indexBanner from "@/components/indexBanner.vue"
-	var api = require('../../config/api.js')
 	export default {
 		data() {
 			return {
-				bannerList:[],
-				fineGoodsList:[],
-				hotGoodsList:[],
-				goodsList:[],
-				scrollTop:0,
-				ciImg:""
+				deviation:0,//偏移值
+				base64:[],
+				information:{
+					name:"欧阳峰",//姓名
+					position:"总经理",//职位
+					company:"云澍（厦门）工业设计有限公司",//公司
+					phone:"13682890983",//公司
+					tel:"88088008",//公司
+					email:"840880059@qq.com",//邮箱
+					introduce:"公众号运营，小程序开发、app开发"
+				},
+				shareToken:"",
+				shareFlag:false,
+				fontSize:{
+					name:32,
+					position:32,
+					company:36,
+					phone:24,
+					tel:24,
+					email:24,
+					text2:24,
+					text3:24
+				},
+				imgList:{
+					pic1:"../../static/synthesisIcon1.png",
+					pic2:"../../static/synthesisIcon2.png",
+					pic3:"../../static/synthesisIcon3.png",
+					pic4:"../../static/0.png",
+					pic5:"../../static/pic_03.png",
+				},
+				startFlag:false,
+				throttleFlag:false
 			}
 		},
-		components:{
-			indexBanner
-		},
 		onLoad() {
-			console.log(api)
-		},
-		onShow() {
-			this.getAdList();
-			this.getProductList();
+			this.getcode();
+			this.information.text1='手机：'
+			this.information.text2='固话：'
+			this.information.text3='邮箱：'
+			var _this=this;
 		},
 		methods: {
-			// indexScroll:function(e){
-			// 	console.log(e)
-			// },
-			gotop:function(){
-				uni.pageScrollTo({
-				    scrollTop: 0,
-					selector:".indexSearchBoxFind",
-				    duration: 300
-				});
-				// uni.createSelectorQuery().select('.indexSearchBox' ).boundingClientRect(data=>{//目标节点
-				// 　　uni.createSelectorQuery().select('.indexContent').boundingClientRect((res)=>{//最外层盒子节点 　　　　
-				// 　　　　uni.pageScrollTo({ 　　　　　　
-				// 　　　　　　duration: 0,//过渡时间必须为0，否则运行到手机会报错
-				// 　　　　　　scrollTop: 0 //滚动到实际距离是元素距离顶部的距离减去最外层盒子的滚动距离（如res.top - data.top）
-				// 　　　　})
-				// 　　}).exec()
-				// }).exec()
+			onShareAppMessage (res){
+				//转发分享
+				return {
+					title: "名片",
+					path: "/pages/index/index",  //页面路径及参数
+					imageUrl:'',  //图片链接，必须是网络连接，后面拼接时间戳防止本地缓存
+				}
 			},
-			goSearch:function(){
-				uni.navigateTo({
-				    url: '../search/search'
-				});
-			},
-			getAdList:function(){
-				var _this=this;
-				uni.request({
-				    url: api.getAdList,
-				    success: (res) => {
-						_this.bannerList=null;
-						_this.bannerList=res.data;
+			addContacts:function(){
+				uni.addPhoneContact({
+				    firstName:this.information.name,
+					email:this.information.email,
+				    mobilePhoneNumber: this.information.phone,
+				    success: function () {
+				        console.log('success');
+				    },
+				    fail: function () {
+				        console.log('fail');
 				    }
 				});
 			},
-			getProductList:function(){
+			clickno:function(){
+				// 阻止冒泡
+			},
+			getcode:function(){
+				// 获取微信token用于生成小程序码
+				var _this=this;
+		
+				var  appid="wxbf5fa3d3954f012c";
+				var  secret="cd61588b5813c7bd9849be2b9d5c7562";
+				 uni.request({
+				        url: `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`,
+				        method: "GET",
+				    }).then((res) => {
+				        if (res[1].data.expires_in != 7200) {
+				            uni.showToast({
+				                title: "分享失败，请重新尝试。",
+				                icon: "none",
+				                duration: 2000
+				            })
+				            uni.hideLoading();
+				            return
+				       }
+				       console.log(res)
+				       _this.shareToken = res[1].data.access_token;
+					   _this.getwxacodeunlimit();
+				       uni.hideLoading();
+				    }).catch(err => {
+				        console.log(err)
+				        uni.hideLoading();
+				    })
+			},
+			getwxacodeunlimit:function(){
+				// token请求小程序码
 				var _this=this;
 				uni.request({
-				    url: api.getProductList,
-				    success: (e) => {
-					   _this.goodsList=e.data.data
-				    }
+				        url: `https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${this.shareToken}`,
+				        method: "POST",
+				        data: {
+				             scene: "id=123&name=jack",
+				             page: 'pages/index/index'
+				        },
+				        responseType: 'arraybuffer',
+				        success: function(res) {
+				            uni.hideLoading();
+				            let src = wx.arrayBufferToBase64(res.data);
+				            _this.imgList.pic6 = 'data:image/png;base64,' + src;
+							// console.log( _this.src2)
+				            // that.showQrcode = true //控制弹出框，展示二维码
+				      }
+				})
+			},
+			goPhone:function(phone){
+				//拨打电话；
+				uni.makePhoneCall({
+				    phoneNumber: phone //仅为示例
 				});
 			},
-			toDetails:function(pid){
-				console.log(pid)
-				uni.redirectTo({
-					url: '../details/details?id='+pid
-				});
+			copyText:function(text){
+				//复制文本至粘贴板
+				// #ifdef H5
+				this.$copyText(text).then(
+					res => {
+						uni.showToast({
+							title: '复制成功'
+						})
+					}
+				)
+				// #endif
+				// #ifndef H5
+				uni.setClipboardData({
+					data: text,
+					success: () => {
+						uni.showToast({
+							title: '复制成功'
+						})
+					}
+				})
+				// #endif
+			},
+			canvasSynthesis:function(){
+				var _this=this;
+				if(!this.throttleFlag){
+					this.throttleFlag=true;
+					uni.showLoading({ //增加loading等待效
+						mask:true
+					})
 				
+					_this.copyFn();
+				}
+			},
+			copyFn() {
+				//合成图片
+				var _this=this;
+				
+				if(!this.startFlag){
+					this.startFlag=true;
+					const query = uni.createSelectorQuery().in(this);
+				
+					uni.createSelectorQuery().selectAll('.synthesisBox').boundingClientRect(data => {  //获取canvas-dom
+						var ctx = uni.createCanvasContext('myCanvas') //绑定画布
+						// begin another path
+						console.log(data)
+						for(var i in data){
+							var flag=false;
+							for(var j in _this.information){
+								if(j==data[i].id){
+									flag=true;
+									break;
+								}
+							}
+							var left=data[i].left;
+							var top=data[i].top+_this.deviation;
+							var w=data[i].width;
+							var h=data[i].height;
+							if(flag){
+								//画文案
+								ctx.beginPath()
+								ctx.setFillStyle('#fff')  //设置内容1的文字样式
+								var tosp=h+top;
+								ctx.setFontSize(h);
+								ctx.setTextAlign('left')  //设置对于坐标点的对齐方式
+								ctx.fillText(_this.information[data[i].id],left,tosp) //计算距离，将文字定位于图片的某处
+							}else{
+								
+								ctx.beginPath()
+								
+								if(data[i].id=="synthesisBottomBox"){
+									_this.deviation=-data[i].top;
+									
+								}else if(data[i].id=="synthesisBoxBG"){
+									//加白色底色
+									ctx.rect( left, top, w, h)
+									ctx.setFillStyle('#fff')
+									ctx.fill();
+								}else{
+									//画图片
+									var imgurl=""
+									for(var j in _this.imgList){
+										if(j==data[i].id ){
+											imgurl=_this.imgList[j]
+											break;
+										}
+									}
+									
+									ctx.drawImage(imgurl, left, top, w, h); //填充进图片
+								}
+								
+									
+							}
+						}
+						ctx.draw();  //输出到画布中
+						
+						setTimeout(()=>{  //不加延迟的话，base64有时候会赋予undefined
+							uni.canvasToTempFilePath({
+								canvasId:'myCanvas',
+								success: (res) => {
+									//弹出海报
+									this.throttleFlag=false;
+									this.base64[0]=res.tempFilePath
+									uni.previewImage({
+										urls: this.base64, //预览的图片数组
+										current: this.base64[0], //点击预览时，显示的那一张图片
+										indicator:"none",
+										longPressActions: {
+											itemList: ['保存图片'] //长按预览图片时显示的操作菜单
+										}
+									})
+								}
+							})
+							uni.hideLoading();
+						},1200)
+					}).exec();
+				}else{
+					//弹出海报
+					this.throttleFlag=false;
+					uni.hideLoading();
+					uni.previewImage({
+						urls: this.base64, //预览的图片数组
+						current: this.base64[0], //点击预览时，显示的那一张图片
+						indicator:"none",
+						longPressActions: {
+							itemList: ['保存图片'] //长按预览图片时显示的操作菜单
+						}
+					})
+				}
+			},
+			hideShare:function(){
+				//分享弹窗显示
+				this.shareFlag=false;
+			},
+			showShare:function(){
+				//分享弹窗隐藏
+				this.shareFlag=true;
 			},
 		}
 	}
 </script>
 
 <style>
-	.set_top{
-		width: 80rpx;
-		height: 80rpx;
-		background: rgba(0,0,0,0.5);
-		box-sizing: border-box;
-		padding: 10rpx;
-		position: fixed;
-		bottom:120rpx;
-		right:20rpx;
-		border-radius:50% ;
-		display: block;
-		z-index: 15;
-	}
-	.set_top image{
+	button::after{ border: none;} 
+	.cardBGImg{
 		width: 100%;
-		height: 100%;
 		display: block;
 	}
-	.searchNO_box{
-		position: fixed;
+	page{
+		height: 100%;
+	}
+	.cardheadText{
+		font-size: 36rpx;
+		line-height:60rpx ;
+	}
+	.box{
+		min-height: 100%;
+		background: #EDEDED;
+		padding: 30rpx;
+		box-sizing: border-box;
+	}
+	.cardBox{
+		margin-bottom: 30rpx;
+		border-radius: 20rpx;
+		overflow: hidden;
+	}
+	.cardhead{
+		background: #fff;
+		padding: 20rpx 0;
+	}
+	.cardbody{
+		padding:30rpx 0 ;
+		background: #fff;
+	}
+	.cardSeparate{
+		height: 50rpx;
+		background: #fff;
+		width: 100%;
+		position: relative;
+	}
+	.cardSeparateC{
+		width: 50rpx;
+		height: 50rpx;
+		background: #EDEDED;
+		border-radius: 50%;
+		position: absolute;
 		top: 0;
+	}
+	.cardSeparateL{
+		left: -25rpx;
+	}
+	.cardSeparateR{
+		right: -25rpx;
+	}
+	.cardSeparateLine{
+		height: 23rpx;
+		border-bottom:2rpx dashed #E0E0E0 ;
+	}
+	.introduceBox{
+		background: #fff;
+		border-radius: 20rpx;
+	}
+	.cardDataItem{
+		padding: 0 18rpx;
+		line-height: 64rpx;
+		font-size: 28rpx;
+	}
+	.cardDataItemIcon{
+		width: 64rpx;
+		height: 64rpx;
+		box-sizing: border-box;
+		padding: 8rpx;
+	}
+	.cardDataItemIconImg{
+		width: 100%;
+	}
+	.cardheadText{
+		text-align: center;
+	}
+	.cardDataItemText{
+		font-size: 30rpx;
+	}
+	.cardDataItemOutput {
+		font-size: 30rpx;
+	}
+	.introduceTitle{
+		padding: 40rpx 20rpx 30rpx;
+		overflow: hidden;
+		border-bottom: 1px solid #ccc;
+	}
+	
+	.introduceTitleLine{
+		width: 10rpx;
+		height: 40rpx;
+		background: #333;
+		float: left;
+		margin-right: 18rpx;
+	}
+	.introduceTitleText{
+		font-size: 40rpx;
+		line-height: 1;
+		float: left;
+	}
+	.introduceMain{
+		padding:40rpx 20rpx;
+	}
+	.cardfoot{
+		background-color: #fff;
+		padding: 20rpx 0 30rpx;
+	}
+	.tac{
+		text-align: center;
+	}
+	.cardfootBtn{
+		width: 260rpx;
+		height: 100rpx;
+		display: inline-block;
+		border-radius: 20rpx;
+		text-align: center;
+		line-height: 100rpx;
+		font-weight: 6000;
+		color: #ffffff;
+		text-shadow: 0 0 0 #000000, 0 0 6px #000000;
+		box-shadow: 0 0 6px 1px #1c2127;
+		font-size: 38rpx;
+		margin: 0 20rpx;
+		background-image: linear-gradient(#E8E8E8 30%,#6F6F6F 85%);
+	}
+	.sharePopup {
+		position: fixed;
 		left: 0;
 		right: 0;
-		width: 100%;
-		height: 140rpx;
-		z-index: 10;
-		background: #ff444c;
+		top: 0;
+		bottom: 0;
+		z-index: 3;
+		background-color: rgba(0,0,0,0.5);
 	}
-	.indexContent {
-		height: 100%;
-		position: relative;
-	}
-	.indexSearchBox{
-		height: 100%;
-		padding-top: 140rpx;
-	}
-	
-	.search {
-		padding: 30rpx 30rpx 30rpx 130rpx;
-		background: #FF444C;
-	}
-	.shopIndexList{
-		
-		background: #F4F4F4;
-	}
-	.logo {
-		display: block;
-		width: 80rpx;
-		height: 80rpx;
+	.shareMain {
+		padding: 80rpx 0 60rpx;
 		background-color: #fff;
-		background-size: 100% 100%;
-		background-position: center;
-		background-repeat: no-repeat;
 		position: absolute;
-		top: 30rpx;
-		left: 30rpx;
-		/* background-image: url(../images/logo.png); */
-		border-radius: 5rpx;
-	}
-	
-	.search_input {
-		width: 100%;
-		height:80rpx;
-		line-height:80rpx;
-		border: 1px solid #e5e5e5;
-		display: block;
-		box-sizing: border-box;
-		padding-left: 24rpx;
-		font-size: 28rpx;
-		color: #757575;
-		background: #fff;
-	}
-	.nav_BoxList{
+		bottom: 0;
+		left: 0;
+		right: 0;
 		overflow: hidden;
-		padding-top: 30rpx;
 	}
-	.nav_BoxItem{
-		width: 20%;
+	.shareBtn{
+		width: 50%;
 		float: left;
-		margin-bottom: 20rpx;
-	}
-	.nav_BoxItem_icon{
-		width: 100rpx;
-		height: 100rpx;
+		background: none;
+	} 
+	.shareIcon {
+		padding: 40rpx;
+		width: 140rpx;
+		height: 140rpx;
 		display: block;
-		box-sizing: border-box;
-		padding: 20rpx;
 		margin: 0 auto;
 		border-radius:50% ;
+		box-sizing: border-box;
 	}
-	.nav_BoxItem_text{
-		font-size: 24rpx;
-		text-align: center;
-		margin-top: 12rpx;
-		
-	}
-	.nav_BoxItem_icon image{
+	.shareIconImg{
 		display: block;
 		width: 100%;
 		height: 100%;
 	}
-	.nav_BoxItem_icon1{
-	background-image: linear-gradient(to bottom,#FBE5A8, #F8BA14);
+	.shareIcon1 {
+		background-color: #333;
 	}
-	.nav_BoxItem_icon2{
-	background-image: linear-gradient(to bottom,#9BD4FE, #1A9EFF);
+	.shareIcon2 {
+		background-color: #333;
 	}
-	.nav_BoxItem_icon3{
-	background-image: linear-gradient(to bottom,#7CF3B1, #2FCB78);
-	}
-	.nav_BoxItem_icon4{
-	background-image: linear-gradient(to bottom,#C599FB, #7E6DF0);
-	}
-	.nav_BoxItem_icon5{
-	background-image: linear-gradient(to bottom,#96D2FF, #169FFF);
-	}
-	.nav_BoxItem_icon6{
-	background-image: linear-gradient(to bottom,#FBAB8D, #EE6761);
-	}
-	.indexBanner {
-		width: 100%;
-		height: 360rpx;
-		overflow: hidden;
-		box-sizing: border-box;
-		padding: 0 20rpx;
-		background: linear-gradient(180deg,#FF444C,#F48373,#fafafa,#fafafa);
-	}
-	.goodTitle{
-		font-size: 44rpx;
-	    padding-left: 20rpx;
-	    background-repeat:  no-repeat;
-	    background-position: 10rpx center;
-	    background-size: 60rpx;
-	    color: #FF444C;
-	    line-height: 96rpx;
-	    height: 96rpx;
-		display: inline-block;
-	}
-	.goodTitleImg{
-	width: 60rpx;
-	height: 60rpx;
-	margin-top: 20rpx;
-	float: left;
-	margin-right: 10rpx;
-
-	}
-	.hotTitle {
-		position: relative;
-		text-align: center;
-		color: #FF444C;
-		font-size: 44rpx;
-		padding-top: 40rpx;
-		height: 80rpx;
+	.shareText{
 		line-height: 80rpx;
+		font-size:40rpx;
+		text-align: center;
+		font-weight: 600;
 	}
-	
-	.hotTitleCircular {
+	.synthesis{
 		position: absolute;
-		width: 20rpx;
-		height: 20rpx;
-		background: #FF444C;
-		border-radius: 50px;
-		left: 50%;
-		top: 50%;
-		margin-top: 10rpx;
-		margin-left: -10rpx;
+		width: 750rpx;
+		height: 844rpx;
+		top: 0;
+		left: 0;
+		z-index: -1;
+		opacity: 0;
 	}
-	
-	.hTCircularL {
-		margin-left: -130rpx;
-	}
-	
-	.hTCircularR {
-		margin-left: 110rpx;
-	}
-	
-	.hotTitleLine {
-		width: 120rpx;
-		height: 6rpx;
+	.synthesisTopBG{
 		position: absolute;
-		left: 50%;
-		top: 50%;
-		margin-top: 17rpx;
-		margin-left: -60rpx;
+		width: 750rpx;
+		height: 422rpx;
+		top: 0;
+		left: 0;
+	}
+	.synthesisBottomBox{
+		position: absolute;
+		width: 750rpx;
+		height: 844rpx;
+		top: 0;
+		left: 0;
+	}
+	.synthesisBottomBG{
+		position: absolute;
+		width: 750rpx;
+		height: 422rpx;
+		background: #fff;
+		top: 422rpx;
+		left: 0;
+	}
+	.synthesisPic{
+		position: absolute;
+		width: 314rpx;
+		height: 251rpx;
+		left:405.5rpx;
+		top: 507.5rpx;
+		z-index: 3;
+	} 
+	.synthesisCode{
+		position: absolute;
+		width: 234rpx;
+		height: 234rpx;
+		left:70.5rpx ;
+		top:516rpx;
+		z-index: 3;
+	}
+	.synthesisIcon {
+		position: absolute;
+		left:50rpx;
+		z-index: 3;
+		width: 44rpx;
+		display: block;
+	}
+	.synthesisIcon1 {
+		width: 40rpx;
 	}
 	
-	.hTLineL {
-		background-image: linear-gradient(to right, #fff, #FF444C);
-		margin-left:-270rpx;
+	.synthesisText {
+	    position: absolute;
+	    left: 110rpx;
+	    font-size: 24rpx;
+	    z-index: 3;
+	    width: 108rpx;
+	    color: #fff;
+		line-height: 1;
 	}
-	
-	.hTLineR {
-		background-image: linear-gradient(to right, #FF444C, #fff);
-		margin-left: 150rpx;
-	}
-	
-	.goodItem {
-		padding: 20rpx;
-		margin-bottom: 20rpx;
-	}
-	
-	.goodItemImg {
-		width:220rpx;
-		height: 220rpx;
-		float: left;
-	}
-	
-	.goodItemTitle {
-		font-size: 28rpx;
-		text-overflow: ellipsis;
-		line-height: 52rpx;
-		height: 104rpx;
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		overflow: hidden;
-		-webkit-box-orient: vertical;
-	}
-	
-	.goodItemText {
-		padding-left: 20rpx;
-	}
-	
-	.goodItemPriceP {
-		height: 72rpx;
-		float: left;
-	
-	}
-	.goodItemPrice {
-		font-size: 36rpx;
-		line-height: 40rpx;
-		color: #FF444C;
-	}
-	.goodItemSales{
+	.synthesisValue{
+		position: absolute;
 		font-size: 24rpx;
-		line-height: 32rpx;
-		color:#aeaeae;
-	
+		line-height: 1;
+		color: #fff;
+		z-index: 3;
+		left: 176rpx;
 	}
-	.goodItemTBox {
-		overflow: hidden;
-		padding-top: 40rpx;
+	.synthesisBox1{
+		top: 140rpx;
 	}
-	
-	.goodItemBtn {
-		width:240rpx;
-		height: 72rpx;
-		line-height: 72rpx;
+	.synthesisBoxt1{
+		top: 150rpx;
+	}
+	.synthesisBox2{
+		top: 206rpx;
+	}
+	.synthesisBoxt2{
+		top: 213rpx;
+	}
+	.synthesisBox3{
+		top: 271rpx;
+	}
+	.synthesisBoxt3{
+		top: 275rpx;
+	}
+	.synthesisTitle{
+		position: absolute;
+		font-size: 36rpx;
+		line-height: 1;
+		top: 37rpx;
+		left: 26px;
 		text-align: center;
 		color: #fff;
+		z-index: 3;
+		
+	}
+	.synthesisName {
+		position: absolute;
+		left: 500rpx;
+	    top: 140rpx;
+	    font-size: 32rpx;
+		line-height: 1;
+		color: #fff;
+		z-index: 3;
+	}
+	.synthesisPosition{
+		position: absolute;
+		left: 500rpx;
+		top: 194rpx;
+		line-height: 1;
 		font-size: 32rpx;
-		float: right;
-		background: #FF444C;
-		border-radius: 10rpx;
+		color: #fff;
+		z-index: 3;
 	}
 	
-	.goodList {
-		padding-bottom: 40rpx;
+	#canvasBox {
+		position: absolute;
+		width: 750rpx;
+		height: 844rpx;
+		top: -99999899rpx;
+		left: -99999899rpx;
+		z-index: 9999;
 	}
-	
-	.hotList {
-		padding-top: 40rpx;
+	.immm {
+		width: 750rpx;
+		height: 844rpx;
 	}
-	
-	.hotItem {
-		padding: 0 10rpx 20rpx 20rpx;
-		width: 50%;
-		box-sizing: border-box;
-		float: left;
-	}
-	.hotItemBorder{
-		background: #fff;
-	}
-	.hotItem:nth-child(2n) {
-		padding: 0 20rpx 20rpx 10rpx;
-	}
-	
-	.hotItemImg {
-		width: 345rpx;
-		height: 345rpx;
-	}
-	
-	.hotItemText {
-		padding: 10px 0;
-	}
-	.hotItemTBox{
-		overflow: hidden;
-		padding: 0 6rpx;
-	}
-	.hotItemSales{
-		font-size: 24rpx;
-		float: right;
-		line-height: 52rpx;
-		color:#aeaeae;
-	}
-	.hotItemTitle {
-		font-size: 28rpx;
-		text-overflow: ellipsis;
-		line-height: 40rpx;
-		height: 80rpx;
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		overflow: hidden;
-		padding: 0 6rpx;
-		-webkit-box-orient: vertical;
-	}
-	
-	.hotItemPrice {
-		font-size: 28rpx;
-		float: left;
-		line-height: 52rpx;
-		height: 52rpx;
-		color: #FF444C;
-	}
-	
-	.hotItemSmall {
-		font-size: 24rpx;
-		color: #999;
-		float: left;
-		line-height: 52rpx;
-		margin-left: 20rpx;
-	}
-
 </style>

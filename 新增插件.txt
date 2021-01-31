@@ -1,0 +1,1 @@
+npm install vue-clipboard2   h5版复制文案

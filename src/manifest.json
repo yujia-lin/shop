@@ -1,6 +1,6 @@
 {
-    "name" : "潮莱富",
-    "appid" : "__UNI__03811EB",
+    "name" : "",
+    "appid" : "",
     "description" : "",
     "versionName" : "1.0.0",
     "versionCode" : "100",
@@ -54,12 +54,12 @@
     "quickapp" : {},
     /* 快应用特有相关 */
     "mp-weixin" : {
+        /* 微信小程序特有相关 */
         "appid" : "wxbf5fa3d3954f012c",
         "setting" : {
             "urlCheck" : false
         },
-        "usingComponents" : true,
-        "permission" : {}
+        "usingComponents" : true
     },
     "mp-alipay" : {
         "usingComponents" : true
@@ -75,9 +75,7 @@
     },
     "h5" : {
         "router" : {
-            "base" : "/h5/",
             "mode" : "history"
-        },
-        "title" : "潮莱富"
+        }
     }
 }
